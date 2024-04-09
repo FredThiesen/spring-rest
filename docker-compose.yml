@@ -10,54 +10,61 @@ services:
         volumes:
             - db_data:/var/lib/mysql
 
+    rabbitmq:
+        image: rabbitmq:3.11-management
+        restart: always
+        ports:
+            - "5672:5672" # Porta de acesso do RabbitMQ
+            - "15672:15672" # Porta do RabbitMQ Management Plugin
+        environment:
+            RABBITMQ_DEFAULT_USER: ricardo
+            RABBITMQ_DEFAULT_PASS: 123456
+
     rest1:
         image: openjdk:21-jdk
         volumes:
             - ./target:/app
-        ports:
-            - "8081:8081"
         working_dir: /app
         command: ["java", "-jar", "springbootrestapi-0.0.1-SNAPSHOT.jar"]
         depends_on:
             - database
+            - rabbitmq
         environment:
             MYSQL_HOST: database
             MYSQL_PORT: 3306
             MYSQL_USER: root
             MYSQL_PASSWORD: root
-            SERVER_PORT: 8081
+            SERVER_PORT: 3000
     rest2:
         image: openjdk:21-jdk
         volumes:
             - ./target:/app
-        ports:
-            - "8082:8082"
         working_dir: /app
         command: ["java", "-jar", "springbootrestapi-0.0.1-SNAPSHOT.jar"]
         depends_on:
             - database
+            - rabbitmq
         environment:
             MYSQL_HOST: database
             MYSQL_PORT: 3306
             MYSQL_USER: root
             MYSQL_PASSWORD: root
-            SERVER_PORT: 8082
+            SERVER_PORT: 3000
     rest3:
         image: openjdk:21-jdk
         volumes:
             - ./target:/app
-        ports:
-            - "8083:8083"
         working_dir: /app
         command: ["java", "-jar", "springbootrestapi-0.0.1-SNAPSHOT.jar"]
         depends_on:
             - database
+            - rabbitmq
         environment:
             MYSQL_HOST: database
             MYSQL_PORT: 3306
             MYSQL_USER: root
             MYSQL_PASSWORD: root
-            SERVER_PORT: 8083
+            SERVER_PORT: 3000
 
     nginx:
         build:
